@@ -20,5 +20,21 @@ app.get('/api/comments', function(req, res) {
 
 //add comment
 app.post('/api/comments', function(req, res) {
-  var comment = {
-    id: Date.now(),
+  var comment = req.body;
+  comment.id = Date.now(); // Add an id to the comment
+  comments.push(comment);
+  fs.writeFile('comments.json', JSON.stringify(comments, null, 4), function(err) {
+    if(err) {
+      console.log(err);
+      res.status(500).send('Internal Server Error');
+    } else {
+      res.json(comment);
+    }
+  });
+});
+
+//start server
+var port = 3000;
+app.listen(port, function() {
+  console.log('Server is running on port ' + port);
+});
