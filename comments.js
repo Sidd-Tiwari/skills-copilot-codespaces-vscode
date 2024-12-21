@@ -1,15 +1,30 @@
 // create web server
-// 1. load express
-const express = require('express');
-// 2. create express server
-const app = express();
-// 3. define a port
-const port = 3000;
-// 4. define a route
-app.get('/', (req, res) => {
-  res.send('Hello World!');
+
+// body parser
+const bodyParser = require('body-parser');
+// import comments
+const comments = require('./comments');
+
+// use body parser middleware
+app.use(bodyParser.json());
+
+// get comments
+app.get('/comments', (req, res) => {
+  res.json(comments);
 });
-// 5. start the server
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+
+// post comments
+app.post('/comments', (req, res) => {
+  const { author, text } = req.body;
+  if (author && text) {
+    comments.push({ author, text });
+    res.json({ message: 'Comment added!' });
+  } else {
+    res.status(400).json({ message: 'Error: author and text required' });
+  }
+});
+
+// listen on port 3000
+app.listen(3000, () => {
+  console.log('Server running on http://localhost:3000/');
 });
