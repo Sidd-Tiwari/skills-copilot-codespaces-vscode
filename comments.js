@@ -1,25 +1,24 @@
 //create web server
-const express = require('express');
-const app = express();
-const bodyParser = require('body-parser');
-const fs = require('fs');
-const path = require('path');
-const commentsPath = path.join(__dirname, 'comments.json');
-const comments = require(commentsPath);
+var express = require('express');
+var app = express();
+var fs = require('fs');
+var bodyParser = require('body-parser');
+var path = require('path');
+var comments = require('./comments.json');
 
+//parse json
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get('/comments', (req, res) => {
-    res.json(comments);
+//serve static files
+app.use(express.static(path.join(__dirname, 'public')));
+
+//get comments
+app.get('/api/comments', function(req, res) {
+  res.json(comments);
 });
 
-app.post('/comments', (req, res) => {
-    const comment = req.body;
-    comments.push(comment);
-    fs.writeFileSync(commentsPath, JSON.stringify(comments, null, 2));
-    res.json(comment);
-});
-
-app.listen(3000, () => {
-    console.log('Server is listening on port 3000');
-});
+//add comment
+app.post('/api/comments', function(req, res) {
+  var comment = {
+    id: Date.now(),
